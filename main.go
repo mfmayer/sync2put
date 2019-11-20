@@ -14,6 +14,8 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+var method *string
+
 func putFile(filePath string, url string) {
 	if _, err := os.Stat(filePath); !os.IsNotExist(err) {
 		file, err := os.Open(filePath)
@@ -22,7 +24,7 @@ func putFile(filePath string, url string) {
 			return
 		}
 		baseName := filepath.Base(filePath)
-		req, err := http.NewRequest("PUT", url+baseName, file)
+		req, err := http.NewRequest(*method, url+baseName, file)
 		if err != nil {
 			log.Println("Error while creating PUT request: ", err)
 			return
@@ -46,6 +48,7 @@ func main() {
 	wd, _ := os.Getwd()
 	dir := flag.String("dir", wd, "Directory to sync")
 	url := flag.String("url", "http://192.168.200.1:3001/rsc/", "Target URL where to put to")
+	method = flag.String("method", "PUT", "HTTP Method to use")
 	syncOnStart := flag.Bool("s", true, "Synchronize whole directory on start")
 	flag.Parse()
 
