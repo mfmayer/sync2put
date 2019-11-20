@@ -25,6 +25,9 @@ func putFile(filePath string, url string, appendFileName bool) {
 		}
 		baseName := ""
 		if appendFileName {
+			if !strings.HasSuffix(url, "/") {
+				url = url + "/"
+			}
 			baseName = filepath.Base(filePath)
 		}
 
@@ -52,7 +55,7 @@ func main() {
 	wd, _ := os.Getwd()
 	dir := flag.String("dir", wd, "Directory to sync")
 	url := flag.String("url", "http://192.168.200.1:3001/rsc/", "Target URL where to put to")
-	appendFileName := flag.Bool("appendFileName2URL", true, "Append file name to URL")
+	appendFileName := flag.Bool("append", true, "Append file name to URL")
 	method = flag.String("method", "PUT", "HTTP Method to use")
 	syncOnStart := flag.Bool("s", true, "Synchronize whole directory on start")
 	flag.Parse()
@@ -62,9 +65,6 @@ func main() {
 	}
 	if !strings.HasPrefix(*url, "http") {
 		log.Fatal("Url ", *url, " is invalid")
-	}
-	if !strings.HasSuffix(*url, "/") {
-		*url = *url + "/"
 	}
 
 	fmt.Println("dir: ", *dir)
