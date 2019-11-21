@@ -11,3 +11,6 @@ sync2put
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# VSCode Project settings
+/.vscode/
