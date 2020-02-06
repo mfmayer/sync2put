@@ -56,29 +56,36 @@ func putFile(filePath string, url string, appendFileName bool, user, pwd string)
 
 func main() {
 	wd, _ := os.Getwd()
-	dir := flag.String("dir", wd, "Directory to sync")
-	url := flag.String("url", "http://192.168.200.1:3001/rsc/", "Target URL where to put to")
-	auth := flag.String("auth", "", "Basic authentication in the form: \"<user>:<pwd\"")
+	dir := flag.String("dir", "", fmt.Sprintf("Directory to sync (e.g. \"%v\")", wd))
+	url := flag.String("url", "", "Target URL where to sync files to (e.g. \"http://192.168.200.1:3001/rsc/\")")
+	auth := flag.String("auth", "", "Basic authentication in the form: \"<user>:<pwd>\"")
 	appendFileName := flag.Bool("append", true, "Append file name to URL")
 	method = flag.String("method", "PUT", "HTTP Method to use")
 	syncOnStart := flag.Bool("s", true, "Synchronize whole directory on start")
 	flag.Parse()
+	if *dir == "" || *url == "" {
+		fmt.Printf("Flags -dir and -url are needed. Try %v --help\n", os.Args[0])
+		return
+	}
 	user := ""
 	pwd := ""
 	if len(*auth) > 0 {
 		up := strings.Split(*auth, ":")
 		if len(up) != 2 {
-			log.Fatal("auth not given in form \"<user>:<pwd\"")
+			fmt.Printf("auth not given in form \"<user>:<pwd>\". Try %v --help\n", os.Args[0])
+			return
 		}
 		user = up[0]
 		pwd = up[1]
 	}
 
 	if _, err := os.Stat(*dir); os.IsNotExist(err) {
-		log.Fatal("Directory ", *dir, " doesn't exist")
+		fmt.Printf("Directory %v doesn't exist. Try %v --help\n", *dir, os.Args[0])
+		return
 	}
 	if !strings.HasPrefix(*url, "http") {
-		log.Fatal("Url ", *url, " is invalid")
+		fmt.Printf("url %v is invalid. Try %v --help\n", *url, os.Args[0])
+		return
 	}
 
 	fmt.Println("dir: ", *dir)
