@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -62,7 +63,11 @@ func main() {
 	appendFileName := flag.Bool("append", true, "Append file name to URL")
 	method = flag.String("method", "PUT", "HTTP Method to use")
 	syncOnStart := flag.Bool("s", true, "Synchronize whole directory on start")
+	allowInsecure := flag.Bool("k", false, "Allow inscure connections with untrusted host certificates")
 	flag.Parse()
+	if *allowInsecure {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	}
 	if *dir == "" || *url == "" {
 		fmt.Printf("Flags -dir and -url are needed. Try %v --help\n", os.Args[0])
 		return
